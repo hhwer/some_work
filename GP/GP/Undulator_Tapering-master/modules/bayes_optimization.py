@@ -154,7 +154,10 @@ class BayesOpt:
             cps = np.shape(cp)
             lengthscales = np.sqrt(1./np.exp(cp))
 #             print('cp',cp,'lengthscales',lengthscales)
+            
+            '''modified by huang: for RBF'''
             self.lengthscales = lengthscales
+        
             if np.size(cps) == 2:
                 if cps[0] < cps[1]: # vector of lengths
                     self.lengthscales = lengthscales.flatten()

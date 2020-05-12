@@ -15,8 +15,9 @@ def convert_short(l,n=32):
             result.append(l[i])
     return result[11:n]
 
-def convert_long(l,N=134):
-    result=[3.5]*66
+def convert_long(l,N=200):
+    #result=[3.5]*66
+    result=[]
     step = N//len(l)
     for i in range(len(l)-1):
         result = result + [l[i]]*step
@@ -38,7 +39,9 @@ def taper_output(param_K):
     const_K = 3.5
     n_z = 2
     unduK_1=const_K*np.ones(int(starting_step_short))
-    unduK_2=const_K+param_K*np.arange(z_steps_short-starting_step_short)**n_z
+    unduK_2=const_K+param_K*np.arange(1,1+z_steps_short-starting_step_short)**n_z
+    
+    #unduK_2=const_K+param_K*np.arange(z_steps_short-starting_step_short)**n_z
     undu_K=np.concatenate((unduK_1,unduK_2))
     unduK = np.array(convert_long(undu_K))
     

@@ -383,6 +383,7 @@ try:
         x0s = x0s + x0 # shift to recenter
         
         
+        
         # arguments to loop over
         # Each process will get a queue to put its result in it
         args = [(f,x,fargs) for x in x0s]
@@ -408,7 +409,6 @@ try:
         
         # Each process will get a queue to put its result in it
         queues = [mp.Queue() for p in range(nprocs)]
-
         for b in range(nbatch):
 
             # try running a batch until it works
@@ -426,6 +426,7 @@ try:
                         p = mp.Process(
                                 target=worker,
                                 args=args[i]+tuple([queues[i-ilow]]))
+                        
                     
                         
                         #p = mp.Process(
