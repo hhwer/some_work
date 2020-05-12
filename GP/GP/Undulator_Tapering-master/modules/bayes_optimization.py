@@ -91,7 +91,10 @@ class BayesOpt:
     def __init__(self, model, target_func, acq_func='EI', xi=0.0, alt_param=-1, m=200, bounds=None, iter_bound=False, prior_data=None, start_dev_vals=None, dev_ids=None, searchBoundScaleFactor=None):
         self.model = model
         self.m = m
-        self.bounds = bounds
+        '''modified by huang'''
+        self.bounds = np.array(bounds)
+
+        #self.bounds = bounds
         self.searchBoundScaleFactor = 1.
         if type(searchBoundScaleFactor) is not type(None):
             try:

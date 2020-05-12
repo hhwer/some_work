@@ -46,24 +46,28 @@ try:
         #     won't change the original codes called by others.
         
         # arguments to loop over
+       
         if modified == 'huang':
             #print('x0s in paraminimize', x0s)
             args = []
             for x in x0s:
-                if x<bounds[0][0] or x>bounds[0][1]:
+                if np.sum(x<bounds[:,0])>0 or np.sum(x>bounds[:,1])>0:
                     t = np.random.uniform(max(x0s.min(), bounds[0][0]), min(x0s.max(), bounds[0][1]))
-                    if x0s.min() > bounds[0][1] or x0s.max() < bounds[0][0]:
+                    if x0s.min() > bounds[:,1].max() or x0s.max() < bounds[:,0].min():
                         t = np.random.uniform(max(bounds[0][0],-1), min(bounds[0][1],0))
                         print('every one in x0s is out of bounds', bounds, ' randomly chose another one from bounds ', t)
                     else:
                         print(x,' in x0s is out of bounds', bounds, ' randomly chose another one ', t)
-                    x = t
+                    x = t*np.ones(x.shape)
                     
                 thesemargs = copy.copy(margs)
                 temp = x+relative_bounds.T
-                temp[0] = max(temp[0], bounds[0][0])
-                temp[1] = min(temp[1], bounds[0][1])
-                thesemargs['bounds'] = (temp).T # it works. deal with it.
+                temp=temp.T
+                temp[temp[:,0]<bounds[:,0]] = bounds[temp[:,0]<bounds[:,0]]
+                temp[temp[:,1]>bounds[:,1]] = bounds[temp[:,1]>bounds[:,1]]
+                #temp[0] = max(temp[0], bounds[0][0])
+                #temp[1] = min(temp[1], bounds[0][1])
+                thesemargs['bounds'] = temp # it works. deal with it.
                 #print('bounds for ',x, 'is', thesemargs['bounds'])
                 args += [(f,x,fargs,thesemargs)]
         elif type(relative_bounds) is not type(None): # static bounds
@@ -381,6 +385,7 @@ try:
         x0s = np.sqrt(2)*erfinv(-1+2*x0s) # normal in all dimensions
         x0s = np.transpose(np.array(lengths,ndmin=2).T * x0s.T) # scale each dimension by it's lenghth scale
         x0s = x0s + x0 # shift to recenter
+        
         
         
         

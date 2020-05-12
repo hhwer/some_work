@@ -6,7 +6,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as Ck, WhiteKer
 from taper_output import taper_output
 
 class machine_interface:
-    def __init__(self, dev_ids, start_point = None):
+    def __init__(self, dev_ids, start_point = None, best_K=None):
         self.pvs = np.array(dev_ids)
         self.name = 'undulator_interface' #name your machine interface. doesn't matter what you call it as long as it isn't 'MultinormalInterface'.
         if type(start_point) == type(None):
@@ -14,13 +14,21 @@ class machine_interface:
             self.setX(current_x)
         else: 
             self.setX(start_point)
+        self.best_K=best_K
 
     def setX(self, x_new):
         self.x = np.array(x_new, ndmin=2)
+        
+    def set_best_K(self, best_K):
+        self.best_K = best_K
 
     def getState(self): 
 #         self.x is und k
 #         print(self.x[0][0])
-        z,power_z = taper_output(self.x[0][0])
+
+        '''modified by huang'''
+        z,power_z = taper_output(self.x, best_K=self.best_K)
+        
+        #z,power_z = taper_output(self.x[0][0])
         objective_state = (power_z[-1])*10**(-10)
         return np.array(self.x, ndmin = 2), np.array([[objective_state]])

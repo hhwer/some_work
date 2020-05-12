@@ -1,3 +1,3 @@
 GP/GP/Undulator_Tapering-master/log/log.out
 *pyc
-GP/Gp/Undulator_Tapering-master/machine_interfaces/.ipynb_checkpoints
+*.ipynb_checkpoints*

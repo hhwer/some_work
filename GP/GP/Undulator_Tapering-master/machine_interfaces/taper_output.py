@@ -24,7 +24,7 @@ def convert_long(l,N=200):
     result = result + [l[-1]]*(N-step*(len(l)-1))
     return result
 
-def taper_output(param_K):
+def taper_output(param_K, best_K=None):
     '''
     Input:
     unduK is an array to represent taper profile (recommend to be a shape of (200,)
@@ -40,12 +40,27 @@ def taper_output(param_K):
     n_z = 2
     unduK_1=const_K*np.ones(int(starting_step_short))
     
-    '''modified by huang'''
-    unduK_2=const_K+param_K*np.arange(1,1+z_steps_short-starting_step_short)**n_z
     
-    #unduK_2=const_K+param_K*np.arange(z_steps_short-starting_step_short)**n_z
-    undu_K=np.concatenate((unduK_1,unduK_2))
-    unduK = np.array(convert_long(undu_K))
+    '''modified by huang'''
+    param_K = param_K.flatten()
+    
+    if best_K is None:
+    
+        '''modified by huang'''
+        unduK_2=const_K+param_K*np.arange(1,1+z_steps_short-starting_step_short)**n_z
+        
+        #unduK_2=const_K+param_K*np.arange(z_steps_short-starting_step_short)**n_z
+        undu_K=np.concatenate((unduK_1,unduK_2))
+        unduK = np.array(convert_long(undu_K))
+    
+    else:
+        '''modified by huang: fine tune parameter in the best quad case'''
+        unduK_2=const_K+best_K*np.arange(1,1+z_steps_short-starting_step_short)**n_z
+        assert unduK_2.shape == param_K.shape
+        unduK_2 += param_K
+        undu_K=np.concatenate((unduK_1,unduK_2))
+        unduK = np.array(convert_long(undu_K))
+        
     
     #unduK = np.ones(z_steps)*K          # tapered undulator parameter, K [ ]
     #if unduK.shape[0]!=z_steps:
@@ -100,10 +115,10 @@ def taper_output(param_K):
     # check unduK is biger than 0, and smaller than 3.5
     
     '''modified by huang, do linear  extrapolation instead of zero map, which makes truth function interrupt in the margin'''
-    if unduK[-1]<0:
-        power_z[-1]= (1 - (unduK[-1]-0)*100)*10**(10)
-    elif param_K>0:
-        power_z[-1]= (1.8428 - (param_K-0)*100)*10**(10)
+    if min(unduK)<0:
+        power_z[-1]= (1 - (0-min(unduK))*100)*10**(10)
+    elif max(unduK)>3.5:
+        power_z[-1]= (1.8428 - (max(unduK)-3.5)*100)*10**(10)
     
     
     return z,power_z    
